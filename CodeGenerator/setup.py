@@ -1,10 +1,10 @@
-from distutils.core import setup
-#from cx_Freeze import setup, Executable
+#from distutils.core import setup
+from cx_Freeze import setup, Executable
 
 setup(
     name='CodeGenerator',
     version='0.1',
-    packages=['/home/ed/PycharmProjects/CodeGenerator/CodeGenerator/CopyDataToArray.glade'],
+    packages=['/home/ed/PycharmProjects/CodeGenerator/CodeGenerator/'],
     url='',
     license='',
     author='Ed den Beer',

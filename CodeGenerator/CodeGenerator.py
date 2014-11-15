@@ -32,6 +32,7 @@ class Main():
         self.cbbDiscAna = self.builder.get_object('cbbDiscAna')
         self.cbbSrcType = self.builder.get_object('cbbSrcType')
         self.cbbDesType = self.builder.get_object('cbbDesType')
+        self.statusbar = self.builder.get_object('statusbar')
 
          #Get the window object and show it
         self.window = self.builder.get_object("applicationwindow1")
@@ -55,6 +56,11 @@ class Main():
         self.file = None
         self.src_text = ''
         self.des_text = ''
+        # its context_id - not shown in the UI but needed to uniquely identify
+        # the source of a message
+        self.context_id = self.statusbar.get_context_id("status")
+        # we push a message onto the statusbar's stack
+        self.statusbar.push(self.context_id, "Waiting for you to do something...")
 
     def on_btnQuit_clicked(self, *args):
         Gtk.main_quit(*args)
@@ -129,8 +135,10 @@ class Main():
             #Check the response of the dialog
             if FileDialog.get_response(self) == Gtk.ResponseType.OK:
                 self.file = FileDialog.get_filename(self)
+                self.statusbar.push(self.context_id, self.file)
             else:
                 MessageBox.warning('No file is selected', 'Click Generate code again and select a CSV file.')
+                self.statusbar.push(self.context_id, 'No file selected')
                 return
             #Open the file in a csv reader
             f = open(self.file)
@@ -212,14 +220,14 @@ class Main():
                     if cellnr == 0:
                         if self.dig_ana == 'Analog':
                             if self.lang == 'Ladder':
-                                self.text = ''.join(['MOV' , ' ', str(cell), ' ', self.tag_des_array, '[', str(array_nr),']', "\n"])
+                                self.text = ''.join(['MOV', ' ', str(cell), ' ', self.tag_des_array, '[', str(array_nr),']', "\n"])
                             else:
-                                self.text = ''.join([self.tag_des_array,'[' ,str(array_nr),']', ' := ',str(cell),"\n"])
+                                self.text = ''.join([self.tag_des_array, '[', str(array_nr), ']', ' := ',str(cell), "\n"])
                         else:
                             if self.lang == 'Ladder':
                                 self.text = ''.join(['XIC ', str(cell), ' OTE ', self.tag_des_array, '[', str(array_nr),'].',str(digit), "\n"])
                             else:
-                                self.text = ''.join([self.tag_des_array, '[', str(array_nr),'].',str(digit), ' := ', str(cell), "\n"])
+                                self.text = ''.join([self.tag_des_array, '[', str(array_nr), '].', str(digit), ' := ', str(cell), "\n"])
                             digit += 1
                             if digit > self.DesType:
                                 digit = 0
@@ -248,14 +256,14 @@ class Main():
                     if cellnr == 0:
                         if self.dig_ana == 'Analog':
                             if self.lang == 'Ladder':
-                                self.text = ''.join(['MOV' , ' ', self.tag_src_array, '[', str(array_nr),']', ' ',
+                                self.text = ''.join(['MOV', ' ', self.tag_src_array, '[', str(array_nr),']', ' ',
                                                      str(cell), "\n"])
                             else:
                                 self.text = ''.join([str(cell), ' := ', self.tag_src_array, '[', str(array_nr),']',"\n"])
                         else:
                             if self.lang == 'Ladder':
                                 self.text = ''.join(['XIC ', self.tag_src_array,'[', str(array_nr), '].',
-                                                     str(digit),' OTE ' , str(cell), "\n"])
+                                                     str(digit), ' OTE ', str(cell), "\n"])
                             else:
                                 self.text = ''.join([str(cell), ' ', self.tag_src_array,'[', str(array_nr), '].',
                                                      str(digit), "\n"])
@@ -284,21 +292,21 @@ class Main():
             for index in range(self.Nr_Of_Items):
                 if self.dig_ana == 'Analog':
                     if self.lang == 'Ladder':
-                        self.text = ''.join(['MOV', ' ', self.tag_src_array, '[' ,str(scr_array_nr),']',
-                                             ' ', self.tag_des_array,'[' ,str(des_array_nr),']', "\n"])
+                        self.text = ''.join(['MOV', ' ', self.tag_src_array, '[', str(scr_array_nr), ']',
+                                             ' ', self.tag_des_array,'[', str(des_array_nr), ']', "\n"])
                     else:
-                        self.text = ''.join([self.tag_des_array,'[' ,str(des_array_nr),']', ' := ', self.tag_src_array, '[' ,str(scr_array_nr),']', "\n"])
+                        self.text = ''.join([self.tag_des_array, '[', str(des_array_nr), ']', ' := ', self.tag_src_array, '[', str(scr_array_nr), ']', "\n"])
 
                     scr_array_nr += 1
                     des_array_nr += 1
 
                 else:
                     if self.lang == 'Ladder':
-                        self.text = ''.join(['XIC ', self.tag_src_array,'[' , str(scr_array_nr), '].',
-                                            str(src_digit), ' OTE ', self.tag_des_array,'[' ,str(des_array_nr),'].',
+                        self.text = ''.join(['XIC ', self.tag_src_array,'[',  str(scr_array_nr), '].',
+                                            str(src_digit), ' OTE ', self.tag_des_array, '[', str(des_array_nr),'].',
                                             str(des_digit), "\n"])
                     else:
-                        self.text = ''.join([self.tag_des_array,'[' ,str(des_array_nr),'].', str(src_digit), ' := ', self.tag_src_array, '[' ,str(scr_array_nr),'].', str(des_digit), "\n"])
+                        self.text = ''.join([self.tag_des_array, '[', str(des_array_nr),'].', str(src_digit), ' := ', self.tag_src_array, '[', str(scr_array_nr), '].', str(des_digit), "\n"])
 
                     #Handle the number of digits, 15 or 31
                     src_digit += 1
