@@ -62,6 +62,7 @@ class Main():
         # we push a message onto the statusbar's stack
         self.statusbar.push(self.context_id, "Waiting for you to do something...")
 
+
     def on_btnQuit_clicked(self, *args):
         Gtk.main_quit(*args)
 
@@ -81,7 +82,7 @@ class Main():
                 MessageBox.error('Source array name', 'No array tag name present')
                 return -1
             #Check if the value is an integer
-            self.start_src_array = check_int('Source array start nr', self.entSourceStart.get_text())
+            self.start_src_array = CheckData.int('Source array start nr', self.entSourceStart.get_text())
              #Check the response from the integer check
             if self.start_src_array == -1:
                 return -1
@@ -99,7 +100,7 @@ class Main():
                 MessageBox.error('Destination array name', 'No array tag name present')
                 return -1
             #Check if the value is an integer
-            self.start_des_array = check_int('Destination array start nr', self.entDesStart.get_text())
+            self.start_des_array = CheckData.int('Destination array start nr', self.entDesStart.get_text())
             #Check the response from the integer check
             if self.start_des_array == -1:
                 return -1
@@ -112,7 +113,7 @@ class Main():
         #If source and destination are not in the CSV file then check the number of items:
         if not self.chbCSVWithSrcArray_active and not self.chbCSVWithDesArray_active:
             #Get number of items to copy
-            self.Nr_Of_Items = check_int('Copy length', self.entNrOfItems.get_text())
+            self.Nr_Of_Items = CheckData.int('Copy length', self.entNrOfItems.get_text())
             #Check the response from the integer check
             if self.Nr_Of_Items == -1:
                 return -1
@@ -324,23 +325,26 @@ class Main():
         except csv.Error as e:
             sys.exit('file %s, line %d: %s' % (self.file, self.reader.line_num, e))
 
+##############################################################################################################
 
-def check_int(title, text):
-    """
-    :param title: Title of message dialog when text is no int
-    :param text: The value as a string to be tested if it is an integer
-    :return: -1 if test fails, text is not an integer
-    """
-    try:
-        if int(text) >= 0:
-            return int(text)
-        else:
-            MessageBox.error(title, 'Value ' + text + ' is less then 0')
+
+class CheckData:
+    def int(title, text):
+        """
+        :param title: Title of message dialog when text is no int
+        :param text: The value as a string to be tested if it is an integer
+        :return: -1 if test fails, text is not an integer
+        """
+        try:
+            if int(text) >= 0:
+                return int(text)
+            else:
+                MessageBox.error(title, 'Value ' + text + ' is less then 0')
+                return -1
+    
+        except ValueError:
+            MessageBox.error(title, 'Value ' + text + ' is not a number')
             return -1
-
-    except ValueError:
-        MessageBox.error(title, 'Value ' + text + ' is not a number')
-        return -1
 
  ###############################################################################################################
 
