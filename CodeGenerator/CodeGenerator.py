@@ -53,7 +53,6 @@ class Main():
         self.chbCSVWithDesArray_active = False
         self.dig_ana = ''
         self.lang = ''
-        self.file = None
         self.src_text = ''
         self.des_text = ''
         # its context_id - not shown in the UI but needed to uniquely identify
@@ -132,17 +131,18 @@ class Main():
         #If a CSV file is used, open file dialog
         if self.chbCSVWithSrcArray_active or self.chbCSVWithDesArray_active:
             self.file = None
-            FileDialog.open_file(self)
+            fd = FileDialog
+            fd.open_file(self)
             #Check the response of the dialog
-            if FileDialog.get_response(self) == Gtk.ResponseType.OK:
-                self.file = FileDialog.get_filename(self)
-                self.statusbar.push(self.context_id, self.file)
+            if fd.get_response(self) == Gtk.ResponseType.OK:
+                self.statusbar.push(self.context_id, fd.get_filename(self))
             else:
                 MessageBox.warning('No file is selected', 'Click Generate code again and select a CSV file.')
                 self.statusbar.push(self.context_id, 'No file selected')
                 return
             #Open the file in a csv reader
-            f = open(self.file)
+            f = open(fd.get_filename(self))
+            del fd #delete filedialog object
             self.reader = csv.reader(f, delimiter=',')
 
         start = datetime.datetime.now()  #For performance testing
@@ -321,6 +321,7 @@ class Main():
 
                 #Put row in textview
                 self.textbuffer.insert(self.textbuffer.get_end_iter(), self.text)
+                self.statusbar.push(self.context_id, 'Code generated, no csv file used.')
 
         except csv.Error as e:
             sys.exit('file %s, line %d: %s' % (self.file, self.reader.line_num, e))
