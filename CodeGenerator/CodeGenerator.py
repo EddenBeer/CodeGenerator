@@ -130,7 +130,7 @@ class Main():
 
         #If a CSV file is used, open file dialog
         if self.chbCSVWithSrcArray_active or self.chbCSVWithDesArray_active:
-            self.file = None
+            #self.file = None
             fd = FileDialog
             fd.open_file(self)
             #Check the response of the dialog
