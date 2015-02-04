@@ -15,7 +15,7 @@ from gi.repository import Gtk
 class Main():
     def __init__(self):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file('CopyDataToArray.glade')
+        self.builder.add_from_file('glade/CopyDataToArray.glade')
         # Connect the signals/events from the glade file
         self.builder.connect_signals(self)
 
