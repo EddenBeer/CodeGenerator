@@ -1,99 +1,111 @@
-#from distutils.core import setup
-import os
-import site
-import sys
-#import glob
+import os, site, sys
 from cx_Freeze import setup, Executable
 
-siteDir = site.getsitepackages()[1]
-includeDllPath = os.path.join(siteDir, "gnome")
+## Get the site-package folder, not everybody will install
+## Python into C:\PythonXX
+site_dir = site.getsitepackages()[1]
+include_dll_path = os.path.join(site_dir, "gnome")
 
-# This is the list of dll which are required by PyGI.
-# I get this list of DLL using http://technet.microsoft.com/en-us/sysinternals/bb896656.aspx
-#   Procedure:
-#    1) Run your from from your IDE
-#    2) Command for using listdlls.exe
-#        c:/path/to/listdlls.exe python.exe > output.txt
-#    3) This would return lists of all dll required by you program
-#       in my case most of dll file were located in c:\python27\Lib\site-packages\gnome
-#       (I am using PyGI (all in one) installer)
-#    4) Below is the list of gnome dll I recevied from listdlls.exe result.
+## Collect the list of missing dll when cx_freeze builds the app
+missing_dll = ['libffi-6.dll',
+    'libgirepository-1.0-1.dll',
+    'libgio-2.0-0.dll',
+    'libgmodule-2.0-0.dll',
+    'libglib-2.0-0.dll',
+    'libintl-8.dll',
+    'libgobject-2.0-0.dll',
+    'libzzz.dll',
+    'libwinpthread-1.dll',
+    'libgtk-3-0.dll',
+    'libgdk-3-0.dll',
+    'libcairo-gobject-2.dll',
+    'libfontconfig-1.dll',
+    'libxmlxpat.dll',
+    'libfreetype-6.dll',
+    'libharfbuzz-gobject-0.dll',
+    'libpng16-16.dll',
+    'libgdk_pixbuf-2.0-0.dll',
+    'libjpeg-8.dll',
+    'libopenraw-7.dll',
+    'librsvg-2-2.dll',
+    'libpango-1.0-0.dll',
+    'libpangocairo-1.0-0.dll',
+    'libpangoft2-1.0-0.dll',
+    'libpangowin32-1.0-0.dll',
+    'libwebp-5.dll',
+    'libatk-1.0-0.dll'
+]
 
-# If you prefer you can import all dlls from c:\python27\Lib\site-packages\gnome folder
-# missingDll = glob.glob(includeDllPath + "\\" + '*.dll')
+## We also need to add the glade folder, cx_freeze will walk
+## into it and copy all the necessary files
+glade_folder = 'glade'
 
-# List of dll I recevied from listdlls.exe result
-missingDLL = ['libffi-6.dll',
-              'libgirepository-1.0-1.dll',
-              'libgio-2.0-0.dll',
-              'libglib-2.0-0.dll',
-              'libintl-8.dll',
-              'libgmodule-2.0-0.dll',
-              'libgobject-2.0-0.dll',
-              'libzzz.dll',
-              'libwinpthread-1.dll',
-              'libgtk-3-0.dll',
-              'libgdk-3-0.dll',
-              'libcairo-gobject-2.dll',
-              'libfontconfig-1.dll',
-              'libxmlxpat.dll',
-              'libfreetype-6.dll',
-              'libpng16-16.dll',
-              'libgdk_pixbuf-2.0-0.dll',
-              'libjpeg-8.dll',
-              'libopenraw-7.dll',
-              'librsvg-2-2.dll',
-              'libpango-1.0-0.dll',
-              'libpangocairo-1.0-0.dll',
-              'libpangoft2-1.0-0.dll',
-              'libharfbuzz-gobject-0.dll',
-              'libpangowin32-1.0-0.dll',
-              'libwebp-4.dll',
-              'libatk-1.0-0.dll',
-              'libgnutls-26.dll',
-              'libproxy.dll',
-              'libp11-kit-0.dll',
-              ]
+## We need to add all the libraries too (for themes, etc..)
+##gtk_libs = ['etc', 'lib', 'share']
+## You can import only important Gtk Runtime data from the gtk folder
+gtk_libs = ['lib\\gdk-pixbuf-2.0',
+            'lib\\girepository-1.0',
+            'share\\glib-2.0',
+            'lib\\gtk-3.0']
 
+## Create the list of includes as cx_freeze likes
+include_files = []
+for dll in missing_dll:
+    include_files.append((os.path.join(include_dll_path, dll), dll))
 
-includeFiles = []
-for DLL in missingDLL:
-    includeFiles.append((os.path.join(includeDllPath, DLL), DLL))
-    # includeFiles.append(DLL)
+## Let's add glade folder and files
+include_files.append((glade_folder, glade_folder))
 
-# You can import all Gtk Runtime data from gtk folder
-#gtkLibs= ['etc','lib','share']
-
-# You can import only important Gtk Runtime data from gtk folder
-gtkLibs = ['lib\\gdk-pixbuf-2.0',
-           'lib\\girepository-1.0',
-           'share\\glib-2.0',
-           'lib\\gtk-3.0']
-
-
-for lib in gtkLibs:
-    includeFiles.append((os.path.join(includeDllPath, lib), lib))
+## Let's add gtk libraries folders and files
+for lib in gtk_libs:
+    include_files.append((os.path.join(include_dll_path, lib), lib))
 
 base = None
+
+## Lets not open the console while running the app
 if sys.platform == "win32":
     base = "Win32GUI"
 
+shortcut_table = [
+    ("DesktopShortcut",        # Shortcut
+     "DesktopFolder",          # Directory_
+     "CodeGenerator",           # Name
+     "TARGETDIR",              # Component_
+     "[TARGETDIR]CodeGenerator.exe",   # Target
+     None,                     # Arguments
+     None,                     # Description
+     None,                     # Hotkey
+     None,                      # Icon
+     None,                     # IconIndex
+     None,                     # ShowCmd
+     'TARGETDIR'               # WkDir
+     )]
+
+msi_data = {"Shortcut": shortcut_table}  # This will be part of the 'data' option of bdist_msi
+
+#Change the default mis options
+bdist_msi_options = {'data' : msi_data}
+
+executables = [
+    Executable("CodeGenerator.py",
+               base=base,
+               icon='idle.ico',
+    )
+]
+
+buildOptions = dict(
+    compressed = False,
+    includes = ["gi", "csv", "datetime",],
+    excludes = ["tkinter"],
+    packages = ["gi"],
+    include_files = include_files
+    )
+
 setup(
-    name = "CodeGenerator",
+    name = "Code Generator",
+    author = "Ed den Beer",
     version = "1.0",
-    author='Ed den Beer',
-    author_email='eddenbeer@gmail.com',
-    description = "Generate copy logic out of a 1 or 2 column csv file.",
-    options = {'build_exe' : {
-        'compressed': True,
-        'includes': ["gi"],
-        'excludes': ['wx', 'email', 'pydoc_data', 'curses'],
-        'packages': ["gi"],
-        'include_files': includeFiles
-    }},
-    executables = [
-        Executable("example.py",
-                   base=base
-                   )
-    ]
+    description = "Generating copy instructions for RsLogix5000 out of a list with tags in a CSV file",
+    options = dict(build_exe = buildOptions, bdist_msi= bdist_msi_options ),
+    executables = executables 
 )
