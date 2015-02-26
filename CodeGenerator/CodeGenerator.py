@@ -65,6 +65,23 @@ class Main():
     def on_btnQuit_clicked(self, *args):
         Gtk.main_quit(*args)
 
+    def on_btnInfo_clicked(self, button):
+        """
+        Open info dialog form
+        :param button:
+        """
+        help_text =  "\n".join(['This program can be used to generate logic to copy data from tags to an array or from an array to tags. ',
+            'It is also possible to copy data from one list of tags to another. ',
+            'With the check-boxes you can select if the source tags, the destination tags or both source and destination tags are in the CSV file.',
+            'If you select, or the source tags or the destination tags, then the CSV file contains one column of tags',
+            'If you select both check-boxes then the CSV file contains two columns of tags, the first with the source tags, the second the destination tags',
+            'Under the checkboxes is the place where you can type the name and start address, and select if the array is a DINT or INT type',
+            'Two languages can be selected, ladder or structured text.',
+            'The last selection is analog or digital.'])
+        MessageBox.info('Information:', help_text)
+
+
+
     def on_btnGenerate_clicked(self, button):
         if self.get_data_from_form() == 0:
                 self.generate()
@@ -121,7 +138,6 @@ class Main():
         self.dig_ana = self.cbbDiscAna.get_active_text()
         self.lang = self.cbbLanguage.get_active_text()
 
-
         return 0
 
     def generate(self):
@@ -130,6 +146,7 @@ class Main():
 
         #If a CSV file is used, open file dialog
         if self.chbCSVWithSrcArray_active or self.chbCSVWithDesArray_active:
+
             #self.file = None
             fd = FileDialog
             fd.open_file(self)
@@ -144,6 +161,7 @@ class Main():
             f = open(fd.get_filename(self))
             del fd #delete filedialog object
             self.reader = csv.reader(f, delimiter=',')
+
 
         start = datetime.datetime.now()  #For performance testing
 
@@ -434,6 +452,7 @@ class FileDialog:
         filter_text = Gtk.FileFilter()
         filter_text.set_name("Text files")
         filter_text.add_mime_type("text/plain")
+        filter_text.add_pattern("*.txt")
         dialog.add_filter(filter_text)
 
         filter_any = Gtk.FileFilter()
