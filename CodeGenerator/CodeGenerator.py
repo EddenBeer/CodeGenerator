@@ -147,6 +147,7 @@ class Main():
         #If a CSV file is used, open file dialog
         if self.chbCSVWithSrcArray_active or self.chbCSVWithDesArray_active:
 
+            #TODO Add faulthandling
             #self.file = None
             fd = FileDialog
             fd.open_file(self)
@@ -157,6 +158,7 @@ class Main():
                 MessageBox.warning('No file is selected', 'Click Generate code again and select a CSV file.')
                 self.statusbar.push(self.context_id, 'No file selected')
                 return
+            #TODO Add fault handling
             #Open the file in a csv reader
             f = open(fd.get_filename(self))
             del fd #delete filedialog object
