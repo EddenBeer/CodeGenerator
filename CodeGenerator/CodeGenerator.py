@@ -1,7 +1,7 @@
 __author__ = 'Ed den Beer'
 '''
 Created on 2 july 2014
-Version 0.0
+Version 1.0 Added info
 
 @author: Ed den Beer - Rockwell Automation
 '''
