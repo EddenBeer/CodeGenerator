@@ -252,8 +252,8 @@ class Main():
                             digit += 1
                             if digit > self.DesType:
                                 digit = 0
+                                array_nr += 1
                     cellnr += 1
-                    array_nr += 1
 
                 #Put row in textview
                 self.textbuffer.insert(self.textbuffer.get_end_iter(), self.text)
@@ -291,8 +291,8 @@ class Main():
                             digit += 1
                             if digit > self.SrcType:
                                 digit = 0
+                                array_nr += 1
                     cellnr += 1
-                    array_nr += 1
 
                 #Put row in textview
                 self.textbuffer.insert(self.textbuffer.get_end_iter(), self.text)
