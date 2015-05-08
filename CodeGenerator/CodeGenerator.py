@@ -1,7 +1,7 @@
 __author__ = 'Ed den Beer'
 '''
 Created on 2 july 2014
-Version 0.0
+Version 1.0 Added info
 
 @author: Ed den Beer - Rockwell Automation
 '''
@@ -147,6 +147,7 @@ class Main():
         #If a CSV file is used, open file dialog
         if self.chbCSVWithSrcArray_active or self.chbCSVWithDesArray_active:
 
+            #TODO Add faulthandling
             #self.file = None
             fd = FileDialog
             fd.open_file(self)
@@ -157,6 +158,7 @@ class Main():
                 MessageBox.warning('No file is selected', 'Click Generate code again and select a CSV file.')
                 self.statusbar.push(self.context_id, 'No file selected')
                 return
+            #TODO Add fault handling
             #Open the file in a csv reader
             f = open(fd.get_filename(self))
             del fd #delete filedialog object
@@ -250,8 +252,8 @@ class Main():
                             digit += 1
                             if digit > self.DesType:
                                 digit = 0
+                                array_nr += 1
                     cellnr += 1
-                    array_nr += 1
 
                 #Put row in textview
                 self.textbuffer.insert(self.textbuffer.get_end_iter(), self.text)
@@ -289,8 +291,8 @@ class Main():
                             digit += 1
                             if digit > self.SrcType:
                                 digit = 0
+                                array_nr += 1
                     cellnr += 1
-                    array_nr += 1
 
                 #Put row in textview
                 self.textbuffer.insert(self.textbuffer.get_end_iter(), self.text)

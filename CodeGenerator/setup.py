@@ -33,7 +33,9 @@ missing_dll = ['libffi-6.dll',
     'libpangoft2-1.0-0.dll',
     'libpangowin32-1.0-0.dll',
     'libwebp-5.dll',
-    'libatk-1.0-0.dll'
+    'libatk-1.0-0.dll',
+    'libtiff-5.dll',
+    'libjasper-1.dll'
 ]
 
 ## We also need to add the glade folder, cx_freeze will walk
@@ -89,7 +91,7 @@ bdist_msi_options = {'data' : msi_data}
 executables = [
     Executable("CodeGenerator.py",
                base=base,
-               icon='idle.ico',
+               icon='toolbox.ico',
     )
 ]
 
@@ -104,7 +106,7 @@ buildOptions = dict(
 setup(
     name = "Code Generator",
     author = "Ed den Beer",
-    version = "1.0",
+    version = "1.1",
     description = "Generating copy instructions for RsLogix5000 out of a list with tags in a CSV file",
     options = dict(build_exe = buildOptions, bdist_msi= bdist_msi_options ),
     executables = executables 
